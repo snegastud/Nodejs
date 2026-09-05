@@ -47,3 +47,37 @@
 >For example, if one function calls another function, Node.js executes the inner function first and then comes back to the previous function.
 
 >This becomes important with asynchronous code. The current synchronous code has to finish first, and only after that can the asynchronous callback or Promise continuation get executed. That's how the Call Stack works together with the Event Loop in Node.js.
+
+**“What is the difference between setTimeout() and setImmediate()?”**
+
+>“setTimeout() and setImmediate() are both Node.js mechanisms for scheduling asynchronous callbacks, but the purpose is different.
+
+>setTimeout() is timer-based. I use it when I need a callback to execute after a minimum delay. For example, if I want to retry an operation after two seconds, I can use setTimeout().
+
+>setImmediate() is Node.js-specific and is used to defer a callback until the check phase of the Event Loop. There is no delay value associated with it. It's especially useful when I'm working with I/O callbacks and want to schedule some follow-up work after the current I/O processing.
+
+>One important point is that I don't assume setTimeout(..., 0) always runs before setImmediate(). Their order depends on where they are scheduled. In an I/O callback, setImmediate() generally runs before setTimeout(..., 0).
+
+`Microtask vs macrotask`
+
+**“What is the difference between a microtask and a macrotask in Node.js?”**
+
+Then you explain:
+
+`Microtask-related:`
+• Promise.then()
+• Promise.catch()
+• Promise.finally()
+• queueMicrotask()
+
+`Node-specific:`
+• process.nextTick(). `process.nextTick() has its own queue and is processed before the regular Promise microtask queue.`
+
+And timer/event-loop work such as:
+
+setTimeout()
+setInterval()
+setImmediate()
+I/O callbacks
+
+
