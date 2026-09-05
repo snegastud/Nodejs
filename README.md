@@ -90,5 +90,20 @@ I/O callbacks
 
 “Sequential means I complete one operation and then start the next one. For example, I first get the employee details and wait for the result, then I get the laptop details. If the two operations are independent, I can run them concurrently using Promise.all(). Then both operations are started together, so I don't unnecessarily wait for one to finish before starting the other.”
 
+`concurrent processing example program`
 
+   this.on('getOnboardingDashboard',async(req)=>{
+
+        const [employeeData,assetData,onboardingRequestData]=await Promise.all([
+            SELECT.from(Employee),
+            SELECT.from(Assets).where({availabilityStatus:"AVAILABLE"}),
+            SELECT.from(OnboardingRequest).where({status:"PENDING"})
+        ])
+
+        return {
+            totalEmployees: employeeData.length,
+            availableAssets: assetData.length,
+            pendingRequests: onboardingRequestData.length
+        }
+    })
 
