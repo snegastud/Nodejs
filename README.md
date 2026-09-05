@@ -39,3 +39,11 @@
 >In asynchronous execution, we can start an operation such as a database call or an API call and continue with other work instead of blocking the main thread. Once the operation completes, we handle the result through a callback, Promise, or async/await.
 
 >In Node.js applications, we generally prefer asynchronous operations for I/O work because it helps the application handle multiple requests efficiently.”
+
+**What is call stack ?**
+
+>“The Call Stack is basically where Node.js keeps track of the JavaScript code that is currently executing. When I call a function, it gets added to the stack, and once that function finishes, it gets removed.
+
+>For example, if one function calls another function, Node.js executes the inner function first and then comes back to the previous function.
+
+>This becomes important with asynchronous code. The current synchronous code has to finish first, and only after that can the asynchronous callback or Promise continuation get executed. That's how the Call Stack works together with the Event Loop in Node.js.
