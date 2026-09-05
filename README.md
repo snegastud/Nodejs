@@ -165,3 +165,8 @@ NPM / NPX                            ⏳
 
 ```
 
+**“What is Express.js, and why do you use it?”**
+
+“Express is a lightweight web framework built on top of Node.js. Node.js gives me the runtime and HTTP capabilities, while Express makes backend development easier by providing things like routing, middleware, request and response handling, and error handling.
+
+For example, instead of manually checking the `HTTP method` and `URL` using Node's low-level http module, I can define an API directly with app.get(), app.post(), and so on. That makes it much easier to build and maintain REST APIs.”
