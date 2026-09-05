@@ -110,3 +110,58 @@ I/O callbacks
 `CPU-intensive work`
 
 “A CPU core is an individual processing unit inside a CPU. A system can have multiple cores, which allows independent workloads to be processed using different cores. In Node.js, CPU cores become especially relevant when we're talking about running multiple processes or worker threads to utilize the available processing capacity.”
+
+**What is a Module in Node.js?**
+
+>“In Node.js, I use modules to keep the application code separated into different files based on functionality. Instead of putting everything in one file, I can keep things like employee handling, asset handling, or utility functions separately and then reuse them wherever needed.
+
+>In CommonJS, I expose functionality using module.exports and consume it using require(). In my CAP project, for example, require('@sap/cds') is how I load the CDS module into my service implementation.”
+
+**ES Modules**
+
+ES Modules are another way to split JavaScript code into separate files and share functionality between them. using that import and export
+
+**“What are ES Modules, and how are they different from CommonJS?”**
+
+>“ES Modules are another JavaScript module system that lets us split code into separate files and share functionality using export and import. CommonJS is the traditional module style commonly seen in Node.js, where we use module.exports and require().
+
+`keypoints'
+
+NAMED EXPORT
+------------
+export function getEmployee() {}
+
+import { getEmployee } from "./employee.js";
+
+• Can have multiple named exports
+• Name matters
+• Import using { }
+
+
+DEFAULT EXPORT
+--------------
+export default getEmployee;
+
+import getEmployee from "./employee.js";
+
+• One default export per module
+• No { }
+• Local import name can be different
+
+**What is npm ci**
+
+>When I run npm ci, NPM uses the existing package-lock.json, removes the existing node_modules directory, and installs the exact dependency tree recorded in the lock file. Unlike npm install, it doesn't update the package-lock.json.
+
+```
+
+NPM / NPX                            ⏳
+   - package.json
+   - package-lock.json
+   - dependencies
+   - devDependencies
+   - npm install
+   - npm ci
+   - npm vs npx
+
+```
+
