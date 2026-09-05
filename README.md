@@ -29,3 +29,13 @@
 >Instead, the asynchronous operation is initiated, and Node.js can continue handling other work. Once that operation is completed, its callback or promise continuation becomes ready to run, and the Event Loop makes sure that work gets executed on the JavaScript thread.
 
 >So basically, the Event Loop allows Node.js to handle a large number of I/O-based operations efficiently even though JavaScript execution itself happens on the main thread.”
+
+**“What is the difference between synchronous and asynchronous execution in Node.js?”**
+
+>“The main difference is whether the execution has to wait for an operation to finish before moving to the next statement.
+
+>In synchronous execution, the code runs step by step, so if one operation takes time, the next operation has to wait.
+
+>In asynchronous execution, we can start an operation such as a database call or an API call and continue with other work instead of blocking the main thread. Once the operation completes, we handle the result through a callback, Promise, or async/await.
+
+>In Node.js applications, we generally prefer asynchronous operations for I/O work because it helps the application handle multiple requests efficiently.”
