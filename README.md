@@ -80,4 +80,15 @@ setInterval()
 setImmediate()
 I/O callbacks
 
+**“What is the difference between sequential and concurrent processing in Node.js?”**
+
+>Sequential means: I finish the first operation, then I start the second operation.
+
+>In concurrent processing, I start independent asynchronous operations together and wait for the results when I actually need them. In Node.js, I can commonly do that using Promise.all().
+
+`example`
+
+“Sequential means I complete one operation and then start the next one. For example, I first get the employee details and wait for the result, then I get the laptop details. If the two operations are independent, I can run them concurrently using Promise.all(). Then both operations are started together, so I don't unnecessarily wait for one to finish before starting the other.”
+
+
 
