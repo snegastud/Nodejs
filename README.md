@@ -107,3 +107,6 @@ I/O callbacks
         }
     })
 
+`CPU-intensive work`
+
+“A CPU core is an individual processing unit inside a CPU. A system can have multiple cores, which allows independent workloads to be processed using different cores. In Node.js, CPU cores become especially relevant when we're talking about running multiple processes or worker threads to utilize the available processing capacity.”
