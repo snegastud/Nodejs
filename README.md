@@ -170,3 +170,214 @@ NPM / NPX                            ⏳
 “Express is a lightweight web framework built on top of Node.js. Node.js gives me the runtime and HTTP capabilities, while Express makes backend development easier by providing things like routing, middleware, request and response handling, and error handling.
 
 For example, instead of manually checking the `HTTP method` and `URL` using Node's low-level http module, I can define an API directly with app.get(), app.post(), and so on. That makes it much easier to build and maintain REST APIs.”
+
+**Routing in Express**
+
+>“Routing is basically how I map an incoming HTTP request to the code that should handle it. The route is matched using the HTTP method and the URL path.
+
+>Express looks at the HTTP method and URL, finds the matching route, and then executes that route handler. Inside the handler, I can perform my validation, business logic, database operations, and finally send the response back to the client.”
+
+`For example`, in an employee onboarding application, I may have different APIs for different operations. If the UI sends GET /employees, I use that route to fetch the employee list. If it sends GET /employees/101, I use the same route pattern to fetch the details of employee 101. And for creating a new employee, I can have POST /employees.
+
+**Flow**
+
+Routing
+   ↓
+HTTP Method + URL
+   ↓
+Find matching route
+   ↓
+Run handler
+   ↓
+Business logic / DB
+   ↓
+Send response
+
+**Request and Response in Express?**
+
+>“In an Express route, req represents the request that comes from the client, and res represents the response that my server sends back. I use req to read things like route parameters, query parameters, request body, headers, and the HTTP method. After doing the required validation, business logic, or database operation, I use res to send the result back, for example with res.json() or res.status().”
+
+**“What's the difference between res.status() and res.json()?”**
+
+“They handle different parts of the HTTP response. res.status() sets the HTTP status code, such as 200, 201, 400, or 404, to tell the client what happened with the request. res.json() sends the actual response data as JSON.
+
+
+**REST API**
+
+>“A REST API is a way for the frontend and backend to communicate using HTTP. We expose different endpoints for different resources.
+
+>For example, in my Employee Onboarding application, I can use GET /employees/101 to get employee details, POST /employees to create an employee, and PUT /employees/101 to update an employee.
+
+>The client sends the request, the backend processes it, and then returns a response, usually with a status code and JSON data.”
+
+**Http methods**
+
+HTTP Methods — When do we use them?
+
+
+GET    /employees
+       → Get employee list
+
+GET    /employees/101
+       → Get employee 101
+
+POST   /employees
+       → Create employee
+
+PUT    /employees/101
+       → Replace/update employee 101
+
+PATCH  /employees/101
+       → Update selected fields of employee 101
+
+DELETE /employees/101
+       → Delete employee 101
+
+
+**HTTP Status Codes**
+
+200 → Success
+201 → Created
+204 → Success, no response body
+400 → Bad request / invalid input
+401 → Not authenticated
+403 → Authenticated but not allowed
+404 → Resource not found
+409 → Conflict
+500 → Internal server error
+
+**Middleware**
+
+>“Middleware is a reusable checkpoint in the request-response flow that performs common processing before the request reaches the actual API handler.”
+
+`example coding`
+
+```
+const express = require("express");
+
+const app = express();
+
+app.use(express.json());
+
+
+// =====================================================
+// 1. LOGGING MIDDLEWARE
+// =====================================================
+
+function loggingMiddleware(req, res, next) {
+
+    console.log(`Request: ${req.method} ${req.url}`);
+
+    next();
+}
+
+
+// =====================================================
+// 2. AUTHENTICATION MIDDLEWARE
+// =====================================================
+
+function authMiddleware(req, res, next) {
+
+    const token = req.headers.authorization;
+
+    if (!token) {
+        return res.status(401).json({
+            message: "Authentication required"
+        });
+    }
+
+    console.log("User is authenticated");
+
+    next();
+}
+
+
+// =====================================================
+// 3. VALIDATION MIDDLEWARE
+// =====================================================
+
+function validateEmployee(req, res, next) {
+
+    const {
+        employeeName,
+        employeeEmail,
+        employeeDept
+    } = req.body;
+
+    if (!employeeName) {
+        return res.status(400).json({
+            message: "Employee name is required"
+        });
+    }
+
+    if (!employeeEmail) {
+        return res.status(400).json({
+            message: "Employee email is required"
+        });
+    }
+
+    if (!employeeDept) {
+        return res.status(400).json({
+            message: "Employee department is required"
+        });
+    }
+
+    console.log("Employee data is valid");
+
+    next();
+}
+
+
+// =====================================================
+// 4. APPLY MIDDLEWARE IN ORDER
+// =====================================================
+
+app.post(
+    "/employees",
+
+    loggingMiddleware,
+
+    authMiddleware,
+
+    validateEmployee,
+
+    (req, res) => {
+
+        console.log("Employee API executed");
+
+        res.status(201).json({
+            message: "Employee created successfully",
+            employee: req.body
+        });
+    }
+);
+
+
+// =====================================================
+// 5. ERROR-HANDLING MIDDLEWARE
+// =====================================================
+
+app.use((err, req, res, next) => {
+
+    console.error("Error:", err.message);
+
+    res.status(500).json({
+        message: "Something went wrong on the server"
+    });
+});
+
+
+// =====================================================
+// START SERVER
+// =====================================================
+
+app.listen(3000, () => {
+
+    console.log("Server running on port 3000");
+
+});
+
+```
+
+
+
