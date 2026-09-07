@@ -378,6 +378,49 @@ app.listen(3000, () => {
 });
 
 ```
+**Data pooling**
+
+```
+const mysql = require("mysql2/promise");
+
+const pool = mysql.createPool({
+    host: "localhost",
+    user: "root",
+    password: "password",
+    database: "onboarding",
+
+    // Maximum 4 connections
+    connectionLimit: 4
+});
+
+async function getEmployee(employeeId) {
+
+    // Take one connection from the pool
+    const connection = await pool.getConnection();
+
+    try {
+
+        const [rows] = await connection.execute(
+            "SELECT * FROM Employees WHERE ID = ?",
+            [employeeId]
+        );
+
+        return rows;
+
+    } finally {
+
+        // Give connection back to pool
+        connection.release();
+    }
+}
+
+```
+**Answer**
+
+>I use a database connection pool instead of creating a new connection for every request. The pool maintains a limited number of reusable connections. When a request needs to access the database, it gets an available connection, executes the query, and then releases the connection back to the pool so another request can reuse it.
+
+>This reduces the overhead of repeatedly creating database connections and helps the application handle concurrent database requests more efficiently. I also make sure connections are released properly and the pool size is configured based on the expected workload and database limits.
+
 
 
 
