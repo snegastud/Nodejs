@@ -422,5 +422,202 @@ async function getEmployee(employeeId) {
 >This reduces the overhead of repeatedly creating database connections and helps the application handle concurrent database requests more efficiently. I also make sure connections are released properly and the pool size is configured based on the expected workload and database limits.
 
 
+**What is streams?**
 
+>“Streams allow Node.js to process data incrementally instead of loading the entire data into memory at once. They're especially useful for large files or continuous data. For example, if my onboarding application receives a large employee CSV file, I can read and process it chunk by chunk, which keeps memory usage under control.”
+
+```
+const fs = require("fs");
+
+const stream = fs.createReadStream("employees.csv");
+
+stream.on("data", (chunk) => {
+    console.log("Received chunk:", chunk.length);
+});
+
+stream.on("end", () => {
+    console.log("Finished reading");
+});
+
+```
+
+**“What is a Buffer in Node.js and where would you use it?”**
+
+>“A Buffer is a Node.js object used to work with raw binary data. I mainly need it when handling files or network data such as PDFs, images, or Excel files. For example, in an employee onboarding application, if HR uploads a joining document, Node.js can receive and process the file data as Buffer chunks, especially when it's being handled through a stream.
+
+
+**“How do you handle CPU-intensive processing in Node.js, and how can you utilize multiple CPU resources?”**
+
+>“Node.js handles I/O-heavy workloads efficiently through its asynchronous non-blocking model. For CPU-intensive work, I don't want to block the main JavaScript thread, so I can use Worker Threads or separate child processes depending on the requirement. Worker Threads are suitable for CPU-heavy JavaScript within the Node.js process, while child processes provide separate memory and stronger isolation. When I need multiple Node.js processes, I can use mechanisms such as fork() and communicate using IPC. For starting external commands, I can use spawn() or exec() depending on whether I need streaming output or collected output.”
+
+**Worker Thread vs Child Process?**
+
+>“A Worker Thread is another JavaScript thread inside the same Node.js process, while a child process is a completely separate process with its own memory space.
+
+>I would use Worker Threads mainly for CPU-intensive JavaScript work, while I would use a child process when I need process isolation or need to run another program or command.”
+
+**“What is the difference between spawn and fork?”**
+
+>“Both are used to create child processes, but their purpose is slightly different. spawn() is a general mechanism for starting a process or external command, and I can handle its input and output as streams. fork() is specifically designed to start another Node.js process and provides built-in IPC for parent-child communication.”
+
+**Cluster and scaling**
+
+Yes. Let's start Cluster & Scaling from the problem first. This is directly connected to the IBM questions you shared.
+
+Step 1 — Why do we need scaling?
+
+Imagine your Express Employee Onboarding application is running as one Node.js server:
+
+                Users
+             /    |    \
+            ↓     ↓     ↓
+        Request Request Request
+             \    |    /
+                  ↓
+          Express / Node.js
+                  ↓
+               HANA
+
+Now imagine 1,000 or 10,000 requests arrive during a busy period.
+
+The first question is:
+
+“Can one application instance handle everything efficiently?”
+
+Sometimes yes, but if traffic or CPU demand becomes too high, we need to increase capacity.
+
+That's where scaling comes in.
+
+2. Two basic ways to scale
+
+There are two simple ideas.
+
+Vertical scaling
+
+Make the existing machine bigger:
+
+Before:
+2 CPU cores
+8 GB RAM
+
+       ↓
+
+After:
+8 CPU cores
+32 GB RAM
+
+You're making one server more powerful.
+
+Horizontal scaling
+
+Create more application instances:
+
+              Load Balancer
+               /    |    \
+              ↓     ↓     ↓
+          Express Express Express
+          Instance Instance Instance
+
+Instead of one server handling all requests, multiple instances share the traffic.
+
+For cloud applications, horizontal scaling is very common.
+
+3. Where does Cluster come in?
+
+This is where Node.js's Cluster concept comes in.
+
+Suppose your machine has:
+
+CPU
+├── Core 1
+├── Core 2
+├── Core 3
+└── Core 4
+
+Instead of running only one Node.js process:
+
+Core 1 ← Node.js
+Core 2 ← unused
+Core 3 ← unused
+Core 4 ← unused
+
+you can run multiple Node.js processes:
+
+Core 1 ← Node.js Process 1
+Core 2 ← Node.js Process 2
+Core 3 ← Node.js Process 3
+Core 4 ← Node.js Process 4
+
+The cluster module helps create multiple Node.js worker processes so the application can use multiple CPU cores.
+
+4. Very simple Cluster example
+const cluster = require("cluster");
+const os = require("os");
+const express = require("express");
+
+if (cluster.isPrimary) {
+
+    const cpuCount = os.cpus().length;
+
+    console.log(`CPU cores: ${cpuCount}`);
+
+    for (let i = 0; i < cpuCount; i++) {
+        cluster.fork();
+    }
+
+} else {
+
+    const app = express();
+
+    app.get("/employees", (req, res) => {
+        res.json({
+            message: "Employee list",
+            processId: process.pid
+        });
+    });
+
+    app.listen(3000, () => {
+        console.log(`Worker running: ${process.pid}`);
+    });
+}
+
+Don't worry about memorizing the code.
+
+The important idea is:
+
+Primary Process
+      ↓
+cluster.fork()
+      ↓
+Worker 1
+Worker 2
+Worker 3
+Worker 4
+
+Each worker is a separate Node.js process.
+
+5. What happens when requests arrive?
+
+Imagine three workers:
+
+             Incoming Requests
+              /      |      \
+             ↓       ↓       ↓
+        Worker 1  Worker 2  Worker 3
+             \       |       /
+              \      |      /
+                 HANA
+
+The operating system / Node.js cluster mechanism can distribute connections across worker processes.
+
+So instead of:
+
+1 process
+→ all workload
+
+you have:
+
+multiple processes
+→ shared workload
+6. Now connect this to your Employee Onboarding project
 
