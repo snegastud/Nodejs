@@ -621,3 +621,12 @@ multiple processes
 → shared workload
 6. Now connect this to your Employee Onboarding project
 
+**how do you handle huge request**
+
+“If an Express server needs to handle a large number of requests, I wouldn't rely on one solution. First, I'd make sure the application uses Node's asynchronous non-blocking model and doesn't block the main thread with unnecessary CPU-heavy work.
+
+On the database side, I'd use connection pooling and efficient queries, and I would avoid returning unnecessary data. For large datasets, I'd use pagination so the application doesn't load or return huge amounts of data in a single request.
+
+For frequently requested and suitable data, I could use caching to reduce database load, and I can use rate limiting to protect the API from excessive traffic.
+
+If one application instance is still not enough, I'd scale horizontally by running multiple application instances behind a load balancer. In a cloud environment, the platform can manage multiple instances and distribute the traffic between them.”
